@@ -87,5 +87,11 @@ namespace realsense_person
 
   const wchar_t* PERSON_MODULE_DATA_PATH = L"/usr/share/librealsense/pt/data/";
 
+  const int H_L = 20;
+  const int S_L = 50;
+  const int V_L = 50;
+  const int H_H = 180;
+  const int S_H = 255;
+  const int V_H = 255;
 }
 #endif

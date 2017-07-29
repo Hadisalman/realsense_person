@@ -215,6 +215,7 @@ namespace realsense_person
 
     detection_pub_ = person_nh.advertise<realsense_person::PersonDetection>(DETECTION_TOPIC, 1);
     detection_image_pub_ = person_nh.advertise<sensor_msgs::Image>(DETECTION_IMAGE_TOPIC, 1);
+    crop_image_pub_ = person_nh.advertise<sensor_msgs::Image>("/crop_image", 1);
 
 /*  TODO: Advertise these topics once they are implemented in the next release.
     tracking_pub_ = person_nh.advertise<realsense_person::PersonTracking>(TRACKING_TOPIC, 1);
@@ -503,6 +504,8 @@ namespace realsense_person
       int tracking_id = detection_data->QueryId();
       PersonModule::PersonTrackingData::BoundingBox2D b_box = detection_data->Query2DBoundingBox();
       PersonModule::PersonTrackingData::PointCombined com = detection_data->QueryCenterMass();
+
+      if(filterPersonMsg(color_image, b_box)) continue;
 
       if ((detection_sub_cnt > 0) || (detection_image_sub_cnt > 0))
       {
@@ -847,6 +850,32 @@ namespace realsense_person
   {
     //TODO: Implement the logic in the next release.
     return true;
+  }
+
+  bool PersonNodelet::filterPersonMsg(const sensor_msgs::ImageConstPtr& img_ptr, PersonModule::PersonTrackingData::BoundingBox2D& bound_box)
+  {
+    cv_bridge::CvImagePtr detection_img_ptr = cv_bridge::toCvCopy(img_ptr);
+    cv::Mat image = detection_img_ptr->image;
+    cv::Rect person_roi(bound_box.rect.x, bound_box.rect.y, bound_box.rect.w, bound_box.rect.h);
+    cv::Mat image_roi = image(person_roi);
+
+    cv::Mat image_hsv, mask;
+    // ROS_INFO_STREAM("x: " << bound_box.rect.x << ", y: " << bound_box.rect.y << ", w: " << bound_box.rect.w << ", h: " << bound_box.rect.h);
+
+    cv::cvtColor(image_roi, image_hsv, cv::COLOR_BGR2HSV);
+    cv::inRange(image_hsv, cv::Scalar(H_L, S_L, V_L), cv::Scalar(H_H, S_H, V_H), mask);
+    int non_zero = cv::countNonZero(mask);
+    float percent = ((float)non_zero / (float)(mask.size().width * mask.size().height));
+
+    ROS_INFO_STREAM("Percent: " << percent);
+
+    cv_bridge::CvImage out_msg;
+    out_msg.header = img_ptr->header;
+    out_msg.encoding = sensor_msgs::image_encodings::MONO8;
+    out_msg.image = mask;
+    crop_image_pub_.publish(out_msg.toImageMsg());
+
+    return false;
   }
 
 }

@@ -129,6 +129,7 @@ typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sens
     ros::Publisher detection_image_pub_;
     ros::Publisher tracking_pub_;
     ros::Publisher tracking_image_pub_;
+    ros::Publisher crop_image_pub_;
 
     boost::shared_ptr<dynamic_reconfigure::Server<realsense_person::person_paramsConfig>> dynamic_reconf_server_;
 
@@ -174,6 +175,7 @@ typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::Image, sens
     PersonBody preparePersonBodyMsg(int tracking_id, PersonModule::PersonTrackingData::Person* single_person_data);
     void preparePersonImageMsg(Person person_msg, cv_bridge::CvImagePtr& cv_ptr);
     void prepareTrackingImageMsg(PersonTracking tracking_msg, cv_bridge::CvImagePtr& cv_ptr);
+    bool filterPersonMsg(const sensor_msgs::ImageConstPtr& img_ptr, PersonModule::PersonTrackingData::BoundingBox2D& bound_box);
   };
 }
 #endif
