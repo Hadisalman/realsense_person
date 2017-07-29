@@ -875,6 +875,8 @@ namespace realsense_person
     out_msg.image = mask;
     crop_image_pub_.publish(out_msg.toImageMsg());
 
+    if(percent < 0.1) return true;
+
     return false;
   }
 
