@@ -867,7 +867,7 @@ namespace realsense_person
     int non_zero = cv::countNonZero(mask);
     float percent = ((float)non_zero / (float)(mask.size().width * mask.size().height));
 
-    ROS_INFO_STREAM("Percent: " << percent);
+    ROS_INFO_STREAM("Percent: " << percent*100.0);
 
     cv_bridge::CvImage out_msg;
     out_msg.header = img_ptr->header;
@@ -875,7 +875,7 @@ namespace realsense_person
     out_msg.image = mask;
     crop_image_pub_.publish(out_msg.toImageMsg());
 
-    if(percent < 0.1) return true;
+    if(percent < 0.10) return true;
 
     return false;
   }
