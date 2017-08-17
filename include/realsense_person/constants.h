@@ -102,8 +102,8 @@ namespace realsense_person
   const int V_L = 50;
   const int H_H = 160;
   const int S_H = 255;
-  const int V_H = 255;8*/ 
-  
+  const int V_H = 255;
+ */ 
   //These are color for yellow(Travers) tracking
   const int H_L = 90;
   const int S_L = 100;
@@ -111,7 +111,7 @@ namespace realsense_person
   const int H_H = 105;
   const int S_H = 255;
   const int V_H = 255;
-  
+ 
  /* //These are color for green(Travers) tracking
   const int H_L = 10;
   const int S_L = 100;
